@@ -29,7 +29,11 @@ async def connect_Zkill_wss():
             while True:
                 response = await websocket.recv()
                 print(response)
-                await asyncio.sleep(1)
+                await asyncio.sleep(0)
+                break
+
+
+
 asyncio.run(connect_Zkill_wss())
 
 client.run('NTg5MDY5MDk0NzcxMjI4Njky.XQOTvA.BvSBGpO9KwMSTlu1Zk7oI1J3W5U')
