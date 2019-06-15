@@ -1,3 +1,5 @@
+#!!/usr/bin/python3
+
 import discord
 import requests
 import asyncio
@@ -25,15 +27,22 @@ async def connect_Zkill_wss():
 
             await websocket.send(name)
             print('Requesting zkill stream..')
+            zkill_channel = client.get_channel(589180865016365066)
             while True:
                 response = await websocket.recv()
-                global data
-                data = json.loads(response)
-                zkill_url = data['zkb']['url']
+                conv_data = json.loads(response)
+                ship_list = []
+                zkill_url = conv_data['zkb']['url']
                 print(zkill_url)
-                zkill_channel = client.get_channel(589180865016365066)
-                await zkill_channel.send(zkill_url)
+                try:
+                    for item in conv_data['attackers']:
+                        if item['ship_type_id'] == 33818:
+                            ship_list.append('Orthrus')
+                        if item['ship_type_id'] == 17738 and item['weapon_type_id'] in [15963, 14190, 14188, 15947]:
+                            ship_list.append('Smartbombing Machariel')
+                except KeyError:
+                    pass
+                if len(ship_list) > 0:
+                    await zkill_channel.send('@everyone\n \n' + ', '.join(ship_list) + ' spotted.\n' + zkill_url)
                 await asyncio.sleep(0)
 client.run('NTg5MDY5MDk0NzcxMjI4Njky.XQOTvA.BvSBGpO9KwMSTlu1Zk7oI1J3W5U')
-
-
