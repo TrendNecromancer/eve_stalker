@@ -8,6 +8,10 @@ import json
 
 client = discord.Client()
 
+with open('ship_ids.json') as json_file:
+    global ship_ids
+    ship_ids = json.load(json_file)
+
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
@@ -36,8 +40,9 @@ async def connect_Zkill_wss():
                 print(zkill_url)
                 try:
                     for item in conv_data['attackers']:
-                        if item['ship_type_id'] == 33818:
-                            ship_list.append('Orthrus')
+                        conv_id = str(item['ship_type_id'])
+                        if conv_id in ship_ids:
+                            ship_list.append(ship_ids[conv_id])
                         if item['ship_type_id'] == 17738 and item['weapon_type_id'] in [15963, 14190, 14188, 15947]:
                             ship_list.append('Smartbombing Machariel')
                 except KeyError:
