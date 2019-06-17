@@ -10,7 +10,7 @@ client = discord.Client()
 
 with open('ship_ids.json') as json_file:
     global ship_ids
-    ship_ids = json.loads(json_file)
+    ship_ids = json.loads(json_file.read())
 
 @client.event
 async def on_ready():
