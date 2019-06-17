@@ -34,7 +34,7 @@ async def connect_Zkill_wss():
             zkill_channel = client.get_channel(589180865016365066)
             while True:
                 response = await websocket.recv()
-                conv_data = json.loads(response)
+                conv_data = json.load(response)
                 ship_list = []
                 zkill_url = conv_data['zkb']['url']
                 print(zkill_url)
