@@ -8,6 +8,25 @@ import json
 
 client = discord.Client()
 
+def lookup_Region(system_id):
+    response_const  = requests.get('http://esi.evetech.net/latest/universe/systems/' + str(system_id))
+
+    data_system = response_const.json()
+    const_id = data_system['constellation_id']
+
+    response_const = requests.get('http://esi.evetech.net/latest/universe/constellations/' + str(const_id))
+
+    data_const = response_const.json()
+    region_id = data_const['region_id']
+
+    response_region = requests.get('http://esi.evetech.net/latest/universe/regions/' + str(region_id))
+
+    data_region = response_region.json()
+    region_name = data_region['name']
+    return region_name
+
+
+
 with open('ship_ids.json') as file:
     global ship_ids
     ship_ids = json.load(file)
@@ -36,6 +55,7 @@ async def connect_Zkill_wss():
                 response = await websocket.recv()
                 conv_data = json.loads(response)
                 ship_list = []
+                system_id = conv_data['solar_system_id']
                 zkill_url = conv_data['zkb']['url']
                 print(zkill_url)
                 try:
@@ -43,7 +63,7 @@ async def connect_Zkill_wss():
                         conv_id = str(item['ship_type_id'])
                         if conv_id in ship_ids:
                             ship_list.append(ship_ids[conv_id])
-                        if item['ship_type_id'] == 17738 and item['weapon_type_id'] in [15963, 14190, 14188, 15947]:
+                        if item['ship_type_id'] == 17738 and item['weapon_type_id'] in [15963, 14190, 14188, 15947] and lookup_Region(system_id) not in {'Aridia','Catch'}:
                             ship_list.append('Smartbombing Machariel')
                 except KeyError:
                     pass
