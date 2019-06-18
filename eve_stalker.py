@@ -8,9 +8,9 @@ import json
 
 client = discord.Client()
 
-with open('ship_ids.json') as json_file:
+with open('ship_ids.json') as file:
     global ship_ids
-    ship_ids = json.loads(json_file.read())
+    ship_ids = json.load(file)
 
 @client.event
 async def on_ready():
@@ -34,7 +34,7 @@ async def connect_Zkill_wss():
             zkill_channel = client.get_channel(589180865016365066)
             while True:
                 response = await websocket.recv()
-                conv_data = json.load(response)
+                conv_data = json.loads(response)
                 ship_list = []
                 zkill_url = conv_data['zkb']['url']
                 print(zkill_url)
