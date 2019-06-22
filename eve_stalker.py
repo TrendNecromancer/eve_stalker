@@ -25,6 +25,14 @@ def lookup_Region(system_id):
     region_name = data_region['name']
     return region_name
 
+def check_Hisec(system_id):
+    response_system = requests.get('http://esi.evetech.net/latest/universe/systems/' + str(system_id))
+    data_system = response_system.json()
+    sec_status = data_system['security_status']
+    if sec_status >= 0.5:
+        return True
+
+
 
 
 with open('ship_ids.json') as file:
@@ -51,12 +59,18 @@ async def connect_Zkill_wss():
             await websocket.send(name)
             print('Requesting zkill stream..')
             zkill_channel = client.get_channel(589180865016365066)
+            loot_channel = client.get_channel(589180865016365066)
             while True:
                 response = await websocket.recv()
                 conv_data = json.loads(response)
                 ship_list = []
                 system_id = conv_data['solar_system_id']
                 zkill_url = conv_data['zkb']['url']
+                fitted_v = conv_data['zkb']['fittedValue']
+                total_v = conv_data['zkb']['totalValue']
+                npc = conv_data['zkb']['npc']
+                if (total_v - fitted_v >= 500000000) and npc is True and check_Hisec is True:
+                    loot_channel.send('@everyone\n\nLoot spotted.\n' + zkill_url)
                 print(zkill_url)
                 try:
                     for item in conv_data['attackers']:
